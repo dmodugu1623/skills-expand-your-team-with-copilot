@@ -569,6 +569,12 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-actions">
+        <span class="share-label">Share:</span>
+        <button class="share-button share-twitter" data-activity="${name}" title="Share on X (Twitter)" aria-label="Share on X (Twitter)">𝕏</button>
+        <button class="share-button share-whatsapp" data-activity="${name}" title="Share on WhatsApp" aria-label="Share on WhatsApp">💬</button>
+        <button class="share-button share-copy" data-activity="${name}" title="Copy link to clipboard" aria-label="Copy link to clipboard">🔗</button>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -586,6 +592,31 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for share buttons
+    const shareText = `Check out "${name}" at Mergington High School! ${details.description}`;
+    const shareUrl = window.location.href.split("?")[0] + "?activity=" + encodeURIComponent(name);
+
+    activityCard.querySelector(".share-twitter").addEventListener("click", () => {
+      const twitterUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText) + "&url=" + encodeURIComponent(shareUrl);
+      window.open(twitterUrl, "_blank", "noopener,noreferrer");
+    });
+
+    activityCard.querySelector(".share-whatsapp").addEventListener("click", () => {
+      const whatsappUrl = "https://wa.me/?text=" + encodeURIComponent(shareText + " " + shareUrl);
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    });
+
+    activityCard.querySelector(".share-copy").addEventListener("click", (event) => {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        const btn = event.currentTarget;
+        const original = btn.textContent;
+        btn.textContent = "✅";
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      }).catch(() => {
+        prompt("Copy this link to share:", shareUrl);
+      });
+    });
 
     activitiesList.appendChild(activityCard);
   }
